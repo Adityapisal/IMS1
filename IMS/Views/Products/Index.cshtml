@@ -1,0 +1,252 @@
+@model InventoryManagementSystem.Models.ProductFilterViewModel
+
+@{
+    ViewData["Title"] = "Products";
+    var paginatedProducts = ViewBag.PaginatedProducts as PaginatedList<Product>;
+}
+
+<div class="container-fluid mt-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Product Management</h1>
+            <p class="text-muted">Manage your product inventory</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="ExportToExcel" class="btn btn-success">
+                <i class="bi bi-file-excel me-2"></i> Export to Excel
+            </a>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i> Add New Product
+            </a>
+        </div>
+    </div>
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    <div class="row">
+        <div class="col-lg-3 col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0 text-primary"><i class="bi bi-funnel me-2"></i> Filter Products</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="get" id="filterForm">
+                        <input type="hidden" asp-for="PageNumber" value="1" />
+                        <input type="hidden" asp-for="PageSize" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="SearchString" class="form-label fw-medium">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                <input asp-for="SearchString" class="form-control" placeholder="Search products..." />
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label fw-medium">Category</label>
+                            <select asp-for="CategoryId" class="form-select" 
+                                    asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                                <option value="">-- All Categories --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label asp-for="MinPrice" class="form-label fw-medium">Min Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">$</span>
+                                    <input asp-for="MinPrice" class="form-control" type="number" min="0" step="0.01" />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="MaxPrice" class="form-label fw-medium">Max Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">$</span>
+                                    <input asp-for="MaxPrice" class="form-control" type="number" min="0" step="0.01" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label asp-for="StartDate" class="form-label fw-medium">From Date</label>
+                                <input asp-for="StartDate" class="form-control" type="date" />
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="EndDate" class="form-label fw-medium">To Date</label>
+                                <input asp-for="EndDate" class="form-control" type="date" />
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-funnel me-2"></i> Apply Filters
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i> Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9 col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Created Date</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (paginatedProducts != null && paginatedProducts.Any())
+                                {
+                                    foreach (var item in paginatedProducts)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if (!string.IsNullOrEmpty(item.ProductImage1))
+                                                    {
+                                                        <img src="@item.ProductImage1" alt="@item.ProductName" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="me-2 d-flex align-items-center justify-content-center bg-light" style="width: 40px; height: 40px; border-radius: 4px;">
+                                                            <i class="bi bi-image text-muted"></i>
+                                                        </div>
+                                                    }
+                                                    <span>@item.ProductName</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-light text-dark">@item.Category?.Name</span></td>
+                                            <td>@item.Price.ToString("C")</td>
+                                            <td>
+                                                @if (item.IsLowStock)
+                                                {
+                                                    <span class="badge bg-danger">@item.Quantity</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">@item.Quantity</span>
+                                                }
+                                            </td>
+                                            <td>@item.CreatedDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <div class="d-flex justify-content-end gap-1">
+                                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Details">
+                                                        <i class="bi bi-info-circle"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <i class="bi bi-search text-muted mb-3" style="font-size: 2rem;"></i>
+                                                <p class="text-muted mb-1">No products found matching your criteria.</p>
+                                                <a asp-action="Index" class="btn btn-sm btn-outline-primary mt-2">Clear filters</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if (paginatedProducts != null && paginatedProducts.Any())
+                    {
+                        <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                            <div class="small text-muted">
+                                Showing @((paginatedProducts.PageIndex - 1) * Model.PageSize + 1) to 
+                                @(Math.Min(paginatedProducts.PageIndex * Model.PageSize, paginatedProducts.TotalItems)) of 
+                                @paginatedProducts.TotalItems items
+                            </div>
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item @(!paginatedProducts.HasPreviousPage ? "disabled" : "")">
+                                        <a asp-action="Index" asp-route-PageNumber="@(paginatedProducts.PageIndex - 1)"
+                                           asp-route-PageSize="@Model.PageSize"
+                                           asp-route-CategoryId="@Model.CategoryId"
+                                           asp-route-MinPrice="@Model.MinPrice"
+                                           asp-route-MaxPrice="@Model.MaxPrice"
+                                           asp-route-StartDate="@Model.StartDate"
+                                           asp-route-EndDate="@Model.EndDate"
+                                           asp-route-SearchString="@Model.SearchString"
+                                           class="page-link">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    
+                                    @for (int i = 1; i <= paginatedProducts.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(i == paginatedProducts.PageIndex ? "active" : "")">
+                                            <a asp-action="Index" asp-route-PageNumber="@i"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-CategoryId="@Model.CategoryId"
+                                               asp-route-MinPrice="@Model.MinPrice"
+                                               asp-route-MaxPrice="@Model.MaxPrice"
+                                               asp-route-StartDate="@Model.StartDate"
+                                               asp-route-EndDate="@Model.EndDate"
+                                               asp-route-SearchString="@Model.SearchString"
+                                               class="page-link">
+                                                @i
+                                            </a>
+                                        </li>
+                                    }
+                                    
+                                    <li class="page-item @(!paginatedProducts.HasNextPage ? "disabled" : "")">
+                                        <a asp-action="Index" asp-route-PageNumber="@(paginatedProducts.PageIndex + 1)"
+                                           asp-route-PageSize="@Model.PageSize"
+                                           asp-route-CategoryId="@Model.CategoryId"
+                                           asp-route-MinPrice="@Model.MinPrice"
+                                           asp-route-MaxPrice="@Model.MaxPrice"
+                                           asp-route-StartDate="@Model.StartDate"
+                                           asp-route-EndDate="@Model.EndDate"
+                                           asp-route-SearchString="@Model.SearchString"
+                                           class="page-link">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function () {
+            $('.alert').alert('close');
+        }, 5000);
+    </script>
+} 

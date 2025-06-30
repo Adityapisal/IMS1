@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid fade-in">
+    <!-- Welcome Banner -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5" style="background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); border-radius: 0.5rem;">
+                    <div class="row align-items-center">
+                        <div class="col-md-8 text-white">
+                            <h1 class="display-4 fw-bold mb-3">Welcome to Inventory Pro</h1>
+                            <p class="lead mb-4">A comprehensive product inventory management system built with ASP.NET Core MVC.</p>
+                            <div class="d-flex gap-3">
+                                <a class="btn btn-light btn-lg" asp-controller="Products" asp-action="Index">
+                                    <i class="bi bi-box me-2"></i> Manage Products
+                                </a>
+                                <a class="btn btn-outline-light btn-lg" asp-controller="Products" asp-action="Create">
+                                    <i class="bi bi-plus-circle me-2"></i> Add New Product
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-none d-md-block text-center">
+                            <i class="bi bi-box-seam" style="font-size: 10rem; opacity: 0.2;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="stat-card primary">
+                <h2 class="mb-1">@ViewBag.TotalProducts</h2>
+                <p class="mb-0 text-white-50">Total Products</p>
+                <i class="bi bi-box-seam stat-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="stat-card success">
+                <h2 class="mb-1">@ViewBag.TotalCategories</h2>
+                <p class="mb-0 text-white-50">Categories</p>
+                <i class="bi bi-tag stat-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="stat-card warning">
+                <h2 class="mb-1">@ViewBag.LowStockCount</h2>
+                <p class="mb-0 text-white-50">Low Stock Items</p>
+                <i class="bi bi-exclamation-triangle stat-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="stat-card info">
+                <h2 class="mb-1">$@ViewBag.TotalValue</h2>
+                <p class="mb-0 text-white-50">Inventory Value</p>
+                <i class="bi bi-currency-dollar stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Access Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary"><i class="bi bi-box me-2"></i> Products</h5>
+                    <a asp-controller="Products" asp-action="Create" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i> Add New
+                    </a>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">
+                        Manage your product inventory, including details like name, price, quantity, and category assignment.
+                        Track low stock items and export data to Excel for reporting.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Products" asp-action="Index" class="btn btn-outline-primary">
+                            <i class="bi bi-list me-2"></i> View All Products
+                        </a>
+                        <a asp-controller="Products" asp-action="ExportToExcel" class="btn btn-outline-success">
+                            <i class="bi bi-file-excel me-2"></i> Export to Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-success"><i class="bi bi-tag me-2"></i> Categories</h5>
+                    <a asp-controller="Categories" asp-action="Create" class="btn btn-sm btn-success">
+                        <i class="bi bi-plus-circle me-1"></i> Add New
+                    </a>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">
+                        Organize your products with categories for better classification and filtering.
+                        Categories help you group similar products together and improve inventory organization.
+                    </p>
+                    <div class="d-grid">
+                        <a asp-controller="Categories" asp-action="Index" class="btn btn-outline-success">
+                            <i class="bi bi-list me-2"></i> View All Categories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Features -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0 text-primary"><i class="bi bi-info-circle me-2"></i> System Features</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="feature-card p-4 border rounded h-100">
+                                <i class="bi bi-search" style="font-size: 2.5rem;"></i>
+                                <h5 class="mt-3">Search & Filter</h5>
+                                <p class="text-muted mb-0">Powerful search and filtering options to find products by name, category, price range, and date.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="feature-card p-4 border rounded h-100">
+                                <i class="bi bi-exclamation-triangle" style="font-size: 2.5rem;"></i>
+                                <h5 class="mt-3">Low Stock Alerts</h5>
+                                <p class="text-muted mb-0">Visual indicators for products with low stock levels to help prevent stockouts.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="feature-card p-4 border rounded h-100">
+                                <i class="bi bi-file-earmark-excel" style="font-size: 2.5rem;"></i>
+                                <h5 class="mt-3">Excel Export</h5>
+                                <p class="text-muted mb-0">Export your product data to Excel for reporting, analysis and sharing.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add any dashboard-specific JavaScript here
+        $(document).ready(function() {
+            // Example: You could add chart initialization here if you add charts later
+        });
+    </script>
+}

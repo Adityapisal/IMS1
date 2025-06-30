@@ -1,0 +1,147 @@
+@model InventoryManagementSystem.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="container mt-4">
+    <h1>Create New Product</h1>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label asp-for="ProductName" class="form-label"></label>
+                            <input asp-for="ProductName" class="form-control" />
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="CategoryId" class="form-label"></label>
+                                <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CreatedDate" class="form-label"></label>
+                                <input asp-for="CreatedDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Price" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Price" class="form-control" type="number" min="0.01" step="0.01" />
+                                </div>
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Quantity" class="form-label"></label>
+                                <input asp-for="Quantity" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="Quantity" class="text-danger"></span>
+                                <small class="text-muted">Products with quantity less than 5 will be marked as low stock</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="ProductImage1" class="form-label">Product Image URL 1</label>
+                            <input asp-for="ProductImage1" class="form-control" placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="ProductImage1" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="ProductImage2" class="form-label">Product Image URL 2 (Optional)</label>
+                            <input asp-for="ProductImage2" class="form-control" placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="ProductImage2" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="ProductImage3" class="form-label">Product Image URL 3 (Optional)</label>
+                            <input asp-for="ProductImage3" class="form-control" placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="ProductImage3" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Preview</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div id="previewImage" class="mb-3">
+                                    <img src="https://via.placeholder.com/300x300?text=Product+Image" alt="Product Preview" class="img-fluid border" />
+                                </div>
+                                <p class="fw-bold mb-0 text-truncate" id="previewName">Product Name</p>
+                                <p class="text-muted mb-0" id="previewCategory">Category</p>
+                                <p class="text-primary mb-0" id="previewPrice">$0.00</p>
+                                <p class="mb-0" id="previewQuantity">Quantity: 0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Create
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Live preview functionality
+        $(document).ready(function() {
+            // Update preview when form fields change
+            $('#ProductName').on('input', function() {
+                $('#previewName').text($(this).val() || "Product Name");
+            });
+            
+            $('#CategoryId').on('change', function() {
+                var selectedText = $('#CategoryId option:selected').text();
+                $('#previewCategory').text(selectedText !== "-- Select Category --" ? selectedText : "Category");
+            });
+            
+            $('#Price').on('input', function() {
+                var price = parseFloat($(this).val()) || 0;
+                $('#previewPrice').text('$' + price.toFixed(2));
+            });
+            
+            $('#Quantity').on('input', function() {
+                var qty = parseInt($(this).val()) || 0;
+                $('#previewQuantity').text('Quantity: ' + qty);
+                
+                if (qty < 5) {
+                    $('#previewQuantity').addClass('text-danger fw-bold');
+                } else {
+                    $('#previewQuantity').removeClass('text-danger fw-bold');
+                }
+            });
+            
+            $('#ProductImage1').on('input', function() {
+                var imageUrl = $(this).val();
+                if (imageUrl) {
+                    $('#previewImage img').attr('src', imageUrl);
+                } else {
+                    $('#previewImage img').attr('src', 'https://via.placeholder.com/300x300?text=Product+Image');
+                }
+            });
+        });
+    </script>
+}
